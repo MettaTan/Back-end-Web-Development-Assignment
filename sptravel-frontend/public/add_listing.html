@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>SP Travel</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- themify CSS -->
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <!-- fontawesome CSS -->
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
+    <!-- magnific CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/gijgo.min.css">
+    <!-- niceselect CSS -->
+    <link rel="stylesheet" href="css/nice-select.css">
+    <!-- slick CSS -->
+    <link rel="stylesheet" href="css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Custom Listings stylesheet -->
+    <link rel="stylesheet" href="css/listings.css">
+
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/yourcode.js"></script>
+    <script>
+        $(document).ready(function () {
+            var userInfo = JSON.parse(localStorage.getItem("userInfo"));
+            if (userInfo != null) {
+                var username = userInfo[0].username;
+                var useremail = userInfo[0].email;
+                var userrole = userInfo[0].role;
+                var userpic = userInfo[0].pic;
+                $("#username").val(username);
+                $("#email").val(useremail);
+                $("#role").val(userrole);
+                $("#profilepic").attr("src", userpic);
+                if (userrole != 0) {
+                    window.location.assign('login.html');
+                    divOutput = `<ul class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="add_user.html" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Admin
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="add_user.html">Add User</a>
+                                    <div id=logout>
+                                        <a class="dropdown-item" href="add_listing.html">Add Listing</a>
+                                    </div>
+                                </ul>`
+                    $('#nav-admin').html(divOutput);
+                };
+            } else {
+                window.location.assign('login.html');
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var userInfo = JSON.parse(localStorage.getItem("userInfo"));
+            var username = userInfo[0].username;
+            var useremail = userInfo[0].email;
+            var userrole = userInfo[0].role;
+            var userpic = userInfo[0].pic;
+            $("#username").val(username);
+            $("#email").val(useremail);
+            $("#role").val(userrole);
+            $("#profilepic").attr("src", userpic);
+            if (userInfo != null) {
+                var username = (userInfo[0]["username"]);
+                divOutput = `<ul class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="login.html" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    ${username}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div id=logout>
+                                        <a class="dropdown-item" href="index.html">Log Out</a>
+                                    </div>
+                                </div>
+                            </ul>`
+                $('#login').html(divOutput);
+                $('#logout').click(function () {
+                    localStorage.clear();
+                })
+                if (userrole == 0) {
+                    divOutput = `<ul class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="add_user.html" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Admin
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="add_user.html">Add User</a>
+                                    <div id=logout>
+                                        <a class="dropdown-item" href="add_listing.html">Add Listing</a>
+                                    </div>
+                                </ul>`
+
+                    $('#nav-admin').html(divOutput);
+                };
+            };
+        });
+    </script>
+    <script>
+        function submitSearch(searchInput) {
+            if (searchInput.length == 0) { // If user leaves Search Input empty
+                searchInput = null;
+            }
+            $.ajax({
+                url: `http://localhost:8081/travel/search/${searchInput}/null/null`,
+                type: 'GET',
+                // data: data,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result, textStatus, xhr) {
+                    // console.log(result);
+
+                    if (result != null) {
+                        var listings = "";
+                        for (var i = 0; i < result.length; i++) {
+                            listings += `<div class="listing col-lg-4 col-sm-6 ">
+                                                     <div id="travel-${result[i].travelid}">
+                                                        <figure class= "mt-3 rounded">
+                                                            <img src="${result[i].picUrl}" alt="${result[i].country}" width="360px" height="294px">
+                                                        </figure>
+                                                        <div class="hotel_text_iner pt-0">
+                                                            <h3>
+                                                                <a href="#">${result[i].title}</a>
+                                                            </h3>
+                                                            <div class="place_review">
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <span>(210 review)</span>
+                                                            </div>
+                                                            <div class = "row mt-3 mx-0">
+                                                                <p class = "col-6 country">${result[i].country}</p>
+                                                                <button type="button" class="col-6 btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="openItinerary(${result[i].travelid})">Edit Itinerary</button>
+                                                            </div>
+                                                            <p class = "description">${result[i].description}</p>
+                                                            <p class = "date">Date: ${result[i].travelPeriod}</p>
+                                                            <h5 class="col-8 p-0">From <span>$${result[i].price}</span></h5>
+                                                            <div class ="d-flex flex-row justify-content-end mx-0">
+                                                                <button type="button" id="deleteButton-${result[i].travelid}" class="p-2 btn btn-danger btn-sm mr-2" onclick="deleteListing(${result[i].travelid}, '${result[i].title}')" >Delete</button>
+                                                                <button type="button"  class="p-2 float-right btn btn-success btn-sm" onclick="editListing(${result[i].travelid}, '${result[i].title}', '${result[i].country}', \`${result[i].description}\`, ${result[i].price}, '${result[i].travelPeriod}', '${result[i].picUrl}')" >Edit</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>`;
+                        }
+                        $('#listings').html(listings);
+                    } else {
+                        console.log("Error");
+
+
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error in Operation');
+                }
+            });
+        }
+
+        function openItinerary(travelId) {
+            console.log(travelId);
+            $("#itinerary-table").html("");
+            $(".itinerary-desc").html('');
+            $("#insert-itinerary").html('');
+            $.ajax({
+                url: `http://localhost:8081/travel/${travelId}/itinerary`,
+                type: 'GET',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result, textStatus, xhr) {
+
+                    if (result.length == 0) {
+
+                        $(".itinerary-desc").html(desc);
+                        var updateForm = ` <form >
+                                                <div>
+                                                    New Activity:
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="title">Day:</label>
+                                                    <input type="number" class="form-control form-control-sm" id="day"
+                                                        placeholder="E.g. 3">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="country">Activity:</label>
+                                                    <input type="text" class="form-control form-control-sm" id="activity"
+                                                        placeholder="E.g. Eiffel Tower">
+                                                </div>
+
+                                                <button type="button" class="btn btn-success float-right"
+                                                    onclick="addItinerary(${travelId})">Add</button>
+                                            </form>`;
+                        $("#insert-itinerary").html(updateForm);
+
+
+                    } else if (result != null) {
+                        console.log(result);
+                        var itinerary = `<thead>
+                                            <tr>
+                                                <th scope="col">Day</th>
+                                                <th scope="col">Activity</th>
+                                            </tr>
+                                        </thead>
+                                            <tbody id="itin-tbody">
+                                        `;
+                        for (var i = 0; i < result.length; i++) {
+                            itinerary += `<tr>
+                                            <th scope="row">${result[i].day}</th>
+                                            <td>${result[i].activity}</td>
+                                        </tr>`;
+                        }
+                        itinerary += `</tbody>`
+                        $("#itinerary-table").html(itinerary);
+                        var desc = `<div>
+                                            Description    
+                                        </div>
+                                        <p>
+                                            ${result[0].description}
+                                        </p>`;
+
+                        $(".itinerary-desc").html(desc);
+                        var updateForm = ` <form >
+                                                 <div class="mt-2">
+                                                    New Activity:
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="title">Day:</label>
+                                                    <input type="number" class="form-control form-control-sm" id="day"
+                                                        placeholder="E.g. 3">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="country">Activity:</label>
+                                                    <input type="text" class="form-control form-control-sm" id="activity"
+                                                        placeholder="E.g. Eiffel Tower">
+                                                </div>
+
+                                                <button type="button" class="btn btn-success float-right"
+                                                    onclick="addItinerary(${travelId})">Add</button>
+                                            </form>`;
+                        $("#insert-itinerary").html(updateForm);
+
+                    } else {
+                        console.log("Error");
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error in Operation');
+                }
+            });
+        }
+
+        function addListing() {
+            errCount = 0;
+            // Retrieves data 
+            var title = $(`#title`).val();
+            var country = $(`#country`).val();
+            var description = $(`#description`).val();
+
+            var month = $(`#month`).val();
+            var year = $(`#year`).val();
+            var travelPeriod = month + ' ' + year;
+
+            var price = $(`#price`).val();
+            var picUrl = $(`#pic-url`).val();
+            //
+
+            var detailArray = [title, description, price, country, month, year, picUrl]; // Array containing all the listing details
+            var fieldNameArray = ['title', 'description', 'price', 'country', "month", "year", 'pic-url']; // Array containing all the ID's of html input tags
+            for (var i = 0; i < detailArray.length; i++) {
+                if (detailArray[i].length == 0) { // Checks if input is empty
+                    var errorMsg = `<div id="${fieldNameArray[i]}-error" class=\" error-message text-danger\"> Please enter a valid ${fieldNameArray[i]}. </div>`;
+                    if ($(`#${fieldNameArray[i]}-error`).html() == undefined) {
+                        $(`#${fieldNameArray[i]}`).after(errorMsg);
+                    }
+                    errCount = 1; // 
+                } else {
+                    if ($(`#${fieldNameArray[i]}-error`).html() != undefined) {
+                        $(`#${fieldNameArray[i]}-error`).html('');
+                    }
+
+                }
+            }
+            if (errCount > 0) {
+                return false;
+            }
+            var data = `{"title": "${title}", "description": "${description}", "price": ${price}, "country":"${country}", "travelPeriod":"${travelPeriod}", "picUrl":"${picUrl}"}`;
+
+            $.ajax({
+                // headers: { 'authorization': 'Bearer ' + tmpToken },
+                url: `http://localhost:8081/travel/`,
+                type: 'POST',
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function (result, textStatus, xhr) {
+                    console.log(result);
+                    if (result != null) {
+                        var succMsg = `<div>
+                                        <h1>
+                                            Listing for ${title} has been added with an ID of ${result.travelid}.
+                                        </h1>
+                                    </div>`;
+                        $('#insert-listing').before(succMsg);
+                        setTimeout(location.reload(), 3500); // Shows success message for 3.5 seconds then reloads page.
+                    } else {
+                        console.log("error");
+                    }
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+
+
+                    if ($(`#insert-error`).html() == undefined) {
+                        var errMsg = `<div id ="insert-error">
+                                        <h1 class="text-danger">
+                                        Error: ${xhr.responseText}.
+                                        </h1>
+                                    </div>`;
+
+                        $('#insert-user').before(errMsg);
+                    }
+
+
+                }
+            });
+        }
+
+        function editListing(travelId, title, country, description, price, period, url) {
+            console.log("Starts function")
+            var dateArray = period.split(" "); // Splits Month from Year in period value
+            console.log(dateArray);
+            $(`#travel-${travelId}`).html(`<form>
+                                            <div class="form-group">
+                                                <label for="title-${travelId}">Title:</label>
+                                                <input type="text" class="form-control form-control-sm" id="title-${travelId}"
+                                                    value="${title}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="country-${travelId}">Country:</label>
+                                                <input type="text" class="form-control form-control-sm" id="country-${travelId}"
+                                                    value="${country}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="description-${travelId}">Description:</label>
+                                                <textarea class="form-control" id="description-${travelId}" rows="5">${description}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="price-${travelId}">Price:</label>
+                                                <input type="number" min="500" max="10000" step="any" id="price-${travelId}"
+                                                    class="form-control form-control-sm" value="${price}" />
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 form-group">
+                                                    <label class="col-6" for="month-${travelId}">Month:</label>
+                                                    <select class="form-control" id="month-${travelId}">
+                                                        <option>${dateArray[0]}</option>
+                                                        <option>January</option>
+                                                        <option>February</option>
+                                                        <option>March</option>
+                                                        <option>April</option>
+                                                        <option>May</option>
+                                                        <option>June</option>
+                                                        <option>July</option>
+                                                        <option>August</option>
+                                                        <option>September</option>
+                                                        <option>October</option>
+                                                        <option>November</option>
+                                                        <option>December</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6 form-group">
+                                                    <label class="col-6" for="year-${travelId}">Year:</label>
+                                                    <select class="form-control" id="year-${travelId}">
+                                                        <option>${dateArray[1]}</option>
+                                                        <option>2020</option>
+                                                        <option>2021</option>
+                                                        <option>2022</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="pic-url-${travelId}">Picture URL:</label>
+                                                <input type="text" class="form-control form-control-sm" id="pic-url-${travelId}"
+                                                    value="${url}">
+                                            </div>
+
+                                            <button type="button" class="btn btn-success float-right" onclick="updateListing(${travelId})">Save</button>
+                                        </form>`);
+
+        }
+
+        function updateListing(travelID) {
+            var errCount = 0;
+            var title = $(`#title-${travelID}`).val();
+            var country = $(`#country-${travelID}`).val();
+            var description = $(`#description-${travelID}`).val();
+            var price = $(`#price-${travelID}`).val();
+            var month = $(`#month-${travelID}`).val();
+            var year = $(`#year-${travelID}`).val()
+            var pic = $(`#pic-url-${travelID}`).val();
+            var detailArray = [title, country, description, price, month, year, pic]; // Array containing all the listing details
+            console.log(detailArray);
+            var fieldNameArray = ['title', 'country', 'description', 'price', 'month', 'year', 'pic-url']; // Array containing all the ID's of html input tags
+
+            var period = month + " " + year; // concat month and year
+
+            for (var i = 0; i < detailArray.length; i++) {
+                if (detailArray[i].length == 0) {
+                    var errorMsg = `<div id="${fieldNameArray[i]}-error" class=\" error-message text-danger\"> Please enter a valid ${fieldNameArray[i]}. </div>`;
+                    if ($(`#${fieldNameArray[i]}-error`).val() == undefined) {
+                        $(`#${fieldNameArray[i]}-${travelID}`).after(errorMsg);
+                    }
+                    errCount = 1; // 
+                }
+            }
+            if (errCount > 0) {
+                return false;
+            }
+
+            var data = `{"title": "${title}", "description": "${description}", "price": ${price}, "country":"${country}", "travelPeriod":"${period}", "picUrl":"${pic}"}`;
+            $.ajax({
+                // headers: { 'authorization': 'Bearer ' + tmpToken },
+                url: `http://localhost:8081/travel/${travelID}`,
+                type: 'PUT',
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function (result, textStatus, xhr) {
+
+                    var succMsg = `<div class="alert alert-success" role="alert">
+                                            Listing for ${title} has been successfully edited.
+                                    </div>`;
+                    $(`#travel-${travelID}`).before(succMsg);
+
+                    //Create string based on edited listing               
+                    var newListing = `  
+                                                        <figure class= "mt-3 rounded">
+                                                            <img src="${pic}" alt="${country}" width="360px" height="294px">
+                                                        </figure>
+                                                        <div class="hotel_text_iner pt-0">
+                                                            <h3>
+                                                                <a href="#">${title}</a>
+                                                            </h3>
+                                                            <div class="place_review">
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                                <span>(210 review)</span>
+                                                            </div>
+                                                            <div class = "row mt-3 mx-0">
+                                                                <p class = "col-6 country">${country}</p>
+                                                                <button type="button" class="col-6 btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="openItinerary(${travelID})">Itinerary</button>
+                                                            </div>
+                                                            <p class = "description">${description}</p>
+                                                            <p class = "date">Date: ${period}</p>
+                                                            <h5 class="col-8 p-0">From <span>$${price}</span></h5>
+                                                            <div class ="d-flex flex-row justify-content-end mx-0">
+                                                                <button type="button" id="deleteButton-${travelID}" class="p-2 btn btn-danger btn-sm mr-2" onclick="deleteListing(${travelID}, '${title}')" >Delete</button>
+                                                                <button type="button"  class="p-2 float-right btn btn-success btn-sm" onclick="editListing(${travelID}, '${title}', '${country}', \`${description}\`, ${price}, '${period}', '${pic}')" >Edit</button>
+                                                            </div>
+                                                        </div>`;
+
+                    $(`#travel-${travelID}`).html(newListing); // Replaces insert from back with the listing
+
+
+                    setTimeout(() => {
+                        $(`.alert-success`).remove();
+                    }, 3500); // Shows success message for 2.5 seconds then reloads page.
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    if ($(`#update-error`).html() == undefined) {
+                        var errMsg = `<div id ="update-error" class="alert alert-danger" role="alert">
+                                        Error: ${xhr.responseText}.
+                                    </div>`;
+
+                        $(`#travel-${travelID}`).before(errMsg);
+                    }
+                }
+            });
+        }
+
+        function deleteListing(travelID, title) {
+            var confirmButton = `<button type="button" class="p-2 float-right btn btn-danger btn-sm mr-2" onclick="deleteListingConfirm(${travelID}, '${title}')" >Confirm</button>`;
+            $(`#deleteButton-${travelID}`).replaceWith(confirmButton);
+        }
+
+        function deleteListingConfirm(travelID, title) {
+            $.ajax({
+                url: `http://localhost:8081/travel/${travelID}`,
+                type: 'DELETE',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result, textStatus, xhr) {
+                    var succMsg = `<div class="alert alert-success" role="alert">
+                                            Listing for ${title} has been successfully deleted.
+                                    </div>`;
+                    $(`#travel-${travelID}`).html(succMsg);
+
+                    setTimeout(() => {
+                        $(`#travel-${travelID}`).remove();
+                    }, 2500); // Shows success message for 2.5 seconds then stops showing.
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error in Operation');
+                }
+            });
+        }
+
+        function addItinerary(travelID) {
+            errCount = 0;
+            // Retrieves data 
+            var day = $(`#day`).val();
+            var activity = $(`#activity`).val();
+            //
+
+            var detailArray = [day, activity]; // Array containing all the listing details
+            var fieldNameArray = ['day', 'activity']; // Array containing all the ID's of html input tags
+
+            for (var i = 0; i < detailArray.length; i++) {
+                if (detailArray[i].length == 0) { // Checks if input is empty
+                    var errorMsg = `<div id="${fieldNameArray[i]}-error" class=\" error-message text-danger\"> Please enter a valid ${fieldNameArray[i]}. </div>`;
+                    if ($(`#${fieldNameArray[i]}-error`).html() == undefined) {
+                        $(`#${fieldNameArray[i]}`).after(errorMsg);
+                    }
+                    errCount = 1; // 
+                } else {
+                    if ($(`#${fieldNameArray[i]}-error`).html() != undefined) {
+                        $(`#${fieldNameArray[i]}-error`).html('');
+                    }
+
+                }
+            }
+            if (errCount > 0) {
+                return false;
+            }
+            var data = `{"day": "${day}", "activity": "${activity}"}`;
+            console.log(JSON.parse(data));
+
+            $.ajax({
+                // headers: { 'authorization': 'Bearer ' + tmpToken },
+                url: `http://localhost:8081/travel/${travelID}/itinerary/`,
+                type: 'POST',
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function (result, textStatus, xhr) {
+                    console.log(result);
+                    if (result != null) {
+                        var succMsg = `<div class="alert alert-success" role="alert">
+                                            Itinerary activity has been added with an ID of ${result.itineraryid}.
+                                    </div>`;
+                        $('#insert-itinerary').before(succMsg);
+
+                        setTimeout(() => {
+                            $(`.alert-success`).remove();
+                        }, 3500); // Shows success message for 3.5 seconds then stops showing.
+
+                        var newRow = `<tr>
+                                        <th scope="row">${day}</th>
+                                        <td>${activity}</td>
+                                    </tr>`;
+                        $("#itin-tbody").append(newRow);
+
+
+                    } else {
+                        console.log("error");
+                    }
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+
+
+                    if ($(`#insert-error`).html() == undefined) {
+                        var errMsg = `<div id ="insert-error">
+                                        <h1 class="text-danger">
+                                        Error: ${xhr.responseText}.
+                                        </h1>
+                                    </div>`;
+
+                        $('#insert-itinerary').before(errMsg);
+                    }
+
+
+                }
+            });
+        }
+
+        $(document).ready(function () {
+
+            submitSearch($("#search").val());
+
+            $("#search").keyup(function () {
+                submitSearch($("#search").val());
+            });
+
+            $("#image").change(function () {
+                var fakePath = $("#image").val(); // Get fake path + name of uploaded file
+                var pathArray = fakePath.split('\\'); // splits the path from the file name
+                var imageUrl = "http://localhost:8081/" + pathArray[pathArray.length - 1]; // Appends file name to the backend URL to create a complete image url
+                $("#pic-url").val(imageUrl);
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+
+    <!--::header part start::-->
+    <header class="main_menu">
+        <div class="main_menu_iner">
+            <div class="container">
+                <div class="row align-items-center ">
+                    <div class="col-lg-12">
+                        <nav class="navbar navbar-expand-lg navbar-light justify-content-between">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+
+                            <div class="collapse navbar-collapse main-menu-item justify-content-center"
+                                id="navbarSupportedContent">
+                                <ul class="navbar-nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="index.html">Home</a>
+                                    </li>
+                                    <li class="nav-item" id="login">
+                                        <a class="nav-link" href="login.html">Log In</a>
+                                    </li>
+                                    <li class="nav-item" id="nav-admin">
+
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Header part end-->
+
+
+
+    <section class="hotel_list section_padding single_page_hotel_list">
+        <div class="container">
+
+            <!-- Itinerary Modal -->
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content my-5">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Itinerary</h4>
+                        </div>
+                        <div class="modal-body">
+                            <table id="itinerary-table" class="table table-striped">
+                                <!-- Table from OpenItinerary function appears here -->
+                            </table>
+                            <div class="itinerary-desc">
+                                <!-- description from OpenItinerary function appears here -->
+                            </div>
+                            <div id="insert-itinerary">
+                                <!-- insert new activity form from OpenItinerary function appears here -->
+                            </div>
+                        </div>
+
+
+                        <div class="justify-content-end mx-0 modal-footer">
+                            <button type="button" class="p-2 float-right btn btn-default"
+                                data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Listing Part -->
+            <div id="insert-listing">
+                <h1>Add New Travel Listing:</h1>
+                <form action="http://localhost:8081/upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="title">Title:</label>
+                        <input type="text" class="form-control form-control-sm" id="title"
+                            placeholder="E.g. 3D2N Tokyo">
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country:</label>
+                        <input type="text" class="form-control form-control-sm" id="country"
+                            placeholder="E.g. Australia">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea class="form-control" id="description" rows="3"
+                            placeholder="Description of the listed country. (P.S Avoid use of new lines)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price:</label>
+                        <input type="number" step="any" id="price"
+                            class="form-control form-control-sm" placeholder="Enter price without &#36;" />
+                    </div>
+                    <div class="row">
+                        <div class="col-6 form-group">
+                            <label class="col-6" for="month">Month:</label>
+                            <select class="form-control" id="month">
+                                <option>January</option>
+                                <option>February</option>
+                                <option>March</option>
+                                <option>April</option>
+                                <option>May</option>
+                                <option>June</option>
+                                <option>July</option>
+                                <option>August</option>
+                                <option>September</option>
+                                <option>October</option>
+                                <option>November</option>
+                                <option>December</option>
+                            </select>
+                        </div>
+                        <div class="col-6 form-group">
+                            <label class="col-6" for="year">Year:</label>
+                            <select class="form-control" id="year">
+                                <option>2020</option>
+                                <option>2021</option>
+                                <option>2022</option>
+                                <option>2023</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pic-url">Picture URL:</label>
+                        <input disabled type="text" class="form-control form-control-sm" id="pic-url"
+                            placeholder="URL will autofill after upload">
+                    </div>
+                    <div class="form-group">
+                        <input id="image" type="file" name="file" />
+                    </div>
+                    <!-- <div>
+                        <input type="submit" name="btn_upload" value="Upload" />
+                    </div> -->
+                    <button type="submit" name="btn_upload" value="Upload" class="btn btn-primary float-right"
+                        onclick="addListing()">Add</button>
+                    <!--  onclick="addListing()" -->
+                </form>
+            </div>
+            <!-- End: Add New Listing Part -->
+
+            <!-- Search  -->
+            <div class="row justify-content-center mb-5">
+                <div class="col-xl-6" id="search-bar">
+                    <form class="form-inline d-flex justify-content-center md-form form-sm active-cyan-2 mt-5"
+                        _lpchecked="1">
+                        <input id="search" class="form-control form-control-sm mr-3 w-75" type="text"
+                            placeholder="Search" aria-label="Search">
+                    </form>
+                </div>
+            </div>
+            <!-- END: Search  -->
+
+            <div id="listings" class="row">
+
+                <!-- Listings from Database go here -->
+
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- footer part start-->
+    <footer class="footer-area">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-sm-6 col-md-5">
+                    <div class="single-footer-widget">
+                        <h4>Discover Destination</h4>
+                        <ul>
+                            <li><a href="#">Miami, USA</a></li>
+                            <li><a href="#">California, USA</a></li>
+                            <li><a href="#">London, UK</a></li>
+                            <li><a href="#">Saintmartine, Bangladesh</a></li>
+                            <li><a href="#">Mount Everast, India</a></li>
+                            <li><a href="#">Sidney, Australia</a></li>
+                            <li><a href="#">Miami, USA</a></li>
+                            <li><a href="#">California, USA</a></li>
+                            <li><a href="#">London, UK</a></li>
+                            <li><a href="#">Saintmartine, Bangladesh</a></li>
+                            <li><a href="#">Mount Everast, India</a></li>
+                            <li><a href="#">Sidney, Australia</a></li>
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4">
+                    <div class="single-footer-widget">
+                        <h4>Subscribe Newsletter</h4>
+                        <div class="form-wrap" id="mc_embed_signup">
+                            <form target="_blank"
+                                action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01"
+                                method="get" class="form-inline">
+                                <input class="form-control" name="EMAIL" placeholder="Your Email Address"
+                                    onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your Email Address '"
+                                    required="" type="email">
+                                <button class="click-btn btn btn-default text-uppercase"> <i
+                                        class="far fa-paper-plane"></i>
+                                </button>
+                                <div style="position: absolute; left: -5000px;">
+                                    <input name="b_36c4fd991d266f23781ded980_aefe40901a" tabindex="-1" value=""
+                                        type="text">
+                                </div>
+
+                                <div class="info"></div>
+                            </form>
+                        </div>
+                        <p>Subscribe our newsletter to get update news and offers</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="single-footer-widget footer_icon">
+                        <h4>Contact Us</h4>
+                        <p>4156, New garden, New York, USA
+                            +880 362 352 783</p>
+                        <span>contact@martine.com</span>
+                        <div class="social-icons">
+                            <a href="#"><i class="ti-facebook"></i></a>
+                            <a href="#"><i class="ti-twitter-alt"></i></a>
+                            <a href="#"><i class="ti-pinterest"></i></a>
+                            <a href="#"><i class="ti-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-lg-12">
+                    <div class="copyright_part_text text-center">
+                        <p class="footer-text m-0">
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            Copyright &copy;
+                            <script>document.write(new Date().getFullYear());</script> All rights reserved | This
+                            template is made with <i class="ti-heart" aria-hidden="true"></i> by <a
+                                href="https://colorlib.com" target="_blank">Colorlib</a>
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- footer part end-->
+
+    <!-- jquery plugins here-->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- magnific js -->
+    <script src="js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="js/owl.carousel.min.js"></script>
+    <!-- masonry js -->
+    <script src="js/masonry.pkgd.js"></script>
+    <!-- masonry js -->
+    <script src="js/jquery.nice-select.min.js"></script>
+    <script src="js/gijgo.min.js"></script>
+    <!-- contact js -->
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/mail-script.js"></script>
+    <script src="js/contact.js"></script>
+    <!-- custom js -->
+    <script src="js/custom.js"></script>
+</body>
+
+</html>

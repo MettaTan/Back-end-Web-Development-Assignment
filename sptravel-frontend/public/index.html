@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Martine</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- themify CSS -->
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <!-- fontawesome CSS -->
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
+    <!-- magnific CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/gijgo.min.css">
+    <!-- niceselect CSS -->
+    <link rel="stylesheet" href="css/nice-select.css">
+    <!-- slick CSS -->
+    <link rel="stylesheet" href="css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Custom Listings stylesheet -->
+    <link rel="stylesheet" href="css/listings.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/yourcode.js"></script>
+    <script>
+        $(document).ready(function () {
+            var userInfo = JSON.parse(localStorage.getItem("userInfo"));
+            if (userInfo == null){
+                window.location.assign('login.html');
+            }
+            var username = userInfo[0].username;
+            var useremail = userInfo[0].email;
+            var userrole = userInfo[0].role;
+            var userpic = userInfo[0].pic;
+            $("#username").val(username);
+            $("#email").val(useremail);
+            $("#role").val(userrole);
+            $("#profilepic").attr("src", userpic);
+            if (userInfo != null) {
+                var username = (userInfo[0]["username"]);
+                divOutput = `<ul class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="login.html" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    ${username}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div id=logout>
+                                        <a class="dropdown-item" href="index.html">Log Out</a>
+                                    </div>
+                                </div>
+                            </ul>`
+                $('#login').html(divOutput);
+                $('#logout').click(function () {
+                    localStorage.clear();
+                })
+                if (userrole == 0) {
+                    divOutput = `<ul class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="add_user.html" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Admin
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="add_user.html">Add User</a>
+                                    <div id=logout>
+                                        <a class="dropdown-item" href="add_listing.html">Add Listing</a>
+                                    </div>
+                                </ul>`
+
+                    $('#nav-admin').html(divOutput);
+                };
+            };
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var cart = getCart()
+            counter = {}
+            if (cart != undefined) {
+                cart.forEach(function (obj) {
+                    var key = JSON.stringify(obj)
+                    counter[key] = (counter[key] || 0) + 1
+                })
+
+                divOutput = ``
+                var yanwei = []
+                var total = 0
+                for (i in cart) {
+                    var count = counter[JSON.stringify(cart[i])]
+                    var price = parseInt(cart[i].price) * parseInt(count)
+
+                    if (!(yanwei.includes(cart[i].travelid))) {
+                        total += price
+                        divOutput += `<div class="cart-item cart-column">
+                        <img class="cart-item-image" src="${cart[i].image}" width="100" height="100">
+                        <span class="cart-item-title">${cart[i].title}</span>
+                        
+                    </div>
+                    <span class="cart-price cart-column">$${price}</span>
+                    <div class="cart-quantity cart-column">
+                        <input class="cart-quantity-input" type="tel" value="${count}">
+                        <button onclick="removeCartItem(${cart[i].travelid}, false)" class="btn btn-danger" type="button">REMOVE</button>
+                    </div>`
+                        yanwei.push(cart[i].travelid)
+                    }
+
+                }
+                $('#cartOutput').html(divOutput);
+                $('#totalcost').html("$" + total);
+            }
+
+        });
+
+
+
+        function ready() {
+            var removeCartItemButtons = document.getElementsByClassName('btn-danger')
+
+            for (var i = 0; i < removeCartItemButtons.length; i++) {
+                var button = removeCartItemButtons[i]
+            }
+
+            var quantityInputs = document.getElementsByClassName('cart-quantity-input')
+            for (var i = 0; i < quantityInputs.length; i++) {
+                var input = quantityInputs[i]
+                input.addEventListener('change', quantityChanged)
+            }
+
+            var addToCartButtons = document.getElementsByClassName('shop-item-button')
+            console.log(addToCartButtons);
+            console.log(addToCartButtons.length);
+            for (var i = 0; i < addToCartButtons.length; i++) {
+                var button = addToCartButtons[i]
+                console.log(button);
+                button.addEventListener('click', addToCartClicked)
+
+            }
+
+            document.getElementsByClassName('btn-purchase')[0].addEventListener('click', purchaseClicked)
+        }
+
+        function purchaseClicked() {
+            alert('Thank you for your purchase')
+            var cartItems = document.getElementsByClassName('cart-items')[0]
+            while (cartItems.hasChildNodes()) {
+                cartItems.removeChild(cartItems.firstChild)
+            }
+            updateCartTotal()
+        }
+
+        function getCart() {
+            return JSON.parse(localStorage.getItem("cart"));
+        }
+
+        function removeCartItem(travelid, all) {
+            $(document).ready(function () {
+                var cart = getCart();
+                for (var i = 0; i < cart.length; i++) {
+                    if (cart[i].travelid == travelid) {
+                        cart.splice(i, 1)
+                        i--;
+                        if (!all) {
+                            break
+                        }
+                    }
+                };
+                localStorage.setItem("cart", JSON.stringify(cart));
+                location.reload();
+            })
+            updateCartTotal()
+        };
+
+        function quantityChanged(event) {
+            var input = event.target
+            if (isNaN(input.value) || input.value <= 0) {
+                input.value = 1
+            }
+            updateCartTotal()
+        }
+
+
+        function addToCartClicked(event) {
+
+            var button = event.target
+            var shopItem = button.parentElement.parentElement
+            var travelid = shopItem.getElementsByClassName('shop-item-travelid')[0].innerText
+            var title = shopItem.getElementsByClassName('shop-item-title')[0].innerText
+            var price = shopItem.getElementsByClassName('shop-item-price')[0].innerText
+            var imageSrc = shopItem.getElementsByClassName('shop-item-image')[0].src
+
+
+            if (localStorage.getItem("userInfo") === null) {
+
+            } else {
+                var cart = []
+                if (localStorage.getItem("cart") != null) {
+                    cart = JSON.parse(localStorage.getItem("cart"));
+                };
+                var newItem = { "travelid": travelid, "title": title, "price": price.replace("$", ""), "image": imageSrc };
+                cart.push(newItem)
+                console.log(cart)
+                localStorage.setItem("cart", JSON.stringify(cart));
+
+
+
+                addItemToCart(travelid, title, price, imageSrc)
+                updateCartTotal()
+            }
+
+        }
+
+        function addItemToCart(travelid, title, price, imageSrc) {
+            var cartRow = document.createElement('div')
+            cartRow.classList.add('cart-row')
+            var cartItems = document.getElementsByClassName('cart-items')[0]
+            var cartItemNames = cartItems.getElementsByClassName('cart-item-title')
+            var cartRowContents = `
+                <div class="cart-item cart-column">
+                    <img class="cart-item-image" src="${imageSrc}" width="100" height="100">
+                    <span class="cart-item-title">${title}</span>
+                    
+                </div>
+                <span class="cart-price cart-column">${price}</span>
+                <div class="cart-quantity cart-column">
+                    <input class="cart-quantity-input" type="number" value="1">
+                    <button onclick="removeCartItem(${travelid}, false)" class="btn btn-danger" type="button">REMOVE</button>
+                </div>
+                `
+            cartRow.innerHTML = cartRowContents
+            cartItems.append(cartRow)
+            cartRow.getElementsByClassName('btn-danger')[0].addEventListener('click', removeCartItem)
+            cartRow.getElementsByClassName('cart-quantity-input')[0].addEventListener('change', quantityChanged)
+            location.reload();
+
+        }
+
+        function updateCartTotal() {
+            var cartItemContainer = document.getElementsByClassName('cart-items')[0]
+            var cartRows = cartItemContainer.getElementsByClassName('cart-row')
+            var total = 0
+            for (var i = 0; i < cartRows.length; i++) {
+                var cartRow = cartRows[i]
+                var priceElement = cartRow.getElementsByClassName('cart-price')[0]
+                var quantityElement = cartRow.getElementsByClassName('cart-quantity-input')[0]
+                var price = parseFloat(priceElement.innerText.replace('$', ''))
+                var quantity = quantityElement.value
+                total = total + (price * quantity)
+            }
+            total = Math.round(total * 100) / 100
+            document.getElementsByClassName('cart-total-price')[0].innerText = '$' + total
+        }
+
+    </script>
+
+
+    <script>
+        // START SEARCH FUNCTION
+        function submitSearch(searchInput, month, year, price) {
+            var searchUrl;
+            var period = month + " " + year;
+            if (period == " ") { // If user leaves period selection empty
+                period = null;
+            }
+            if (searchInput.length == 0) { // If user leaves Search Input empty
+                searchInput = null;
+            }
+            if (price.length == 0) { // If user leaves price empty
+                price = null;
+            }
+
+            $.ajax({
+                url: `http://localhost:8081/travel/search/${searchInput}/${period}/${price}`,
+                type: 'GET',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result, textStatus, xhr) {
+
+                    if (result != null) {
+                        var listings = "";
+                        for (var i = 0; i < result.length; i++) {
+                            listings += `<div class="listing col-lg-4 col-sm-6" >
+                                <div class="single_ihotel_list">
+                                        <div class="shop-items">
+                                            <div class="shop-item">
+                                                <figure class= "rounded">
+                                                    <img class="shop-item-image" src="${result[i].picUrl}" alt="${result[i].country}" width="360px" height="294px">
+                                                </figure>
+                                                <div class="hotel_text_iner p-0">
+                                                            <h3>
+                                                                <a class="shop-item-title" href="#">${result[i].title}</a>
+                                                                <a class="d-none shop-item-travelid" href="#">${result[i].travelid}</a>
+                                                            </h3>
+                                                            <div class = "row mx-0">
+                                                                    <p class = "col-6 country">${result[i].country}</p>
+                                                                    <button type="button" class="col-6 btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="openItinerary(${result[i].travelid})">Itinerary</button>
+                                                                </div>
+                                                                
+                                                                <p class = "description">${result[i].description}</p>
+                                                                <p class = "date">Date: ${result[i].travelPeriod}</p>
+                                                </div>
+                                                <div class ="row mx-0">
+                                                    <h5 class="col-8 p-0" >Price: $<span class="shop-item-price">${result[i].price}</span></h5>
+                                                    <button class="col-4 mb-2 float-right btn btn-success btn-sm shop-item-button" type="button" onclick="ready()">ADD TO CART</button>
+                                                </div>
+                                            
+                                            </div>
+                                         </div>
+                                        </div>
+                            </div>`;
+                        }
+                        $('#listings').html(listings);
+                        if (document.readyState == 'loading') {
+                            document.addEventListener('DOMContentLoaded', ready)
+                        } else {
+                            ready()
+                        }
+                    } else {
+                        console.log("Error");
+
+
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error in Operation');
+                }
+            });
+        }
+        // END SEARCH FUNCTION
+
+        // START OPEN ITINERARY
+        function openItinerary(travelId) {
+            console.log(travelId);
+            $("#itinerary-table").html("");
+            $(".itinerary-desc").html('');
+            $.ajax({
+                url: `http://localhost:8081/travel/${travelId}/itinerary`,
+                type: 'GET',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result, textStatus, xhr) {
+
+                    if (result != null) {
+                        console.log(result);
+                        var itinerary = `<thead>
+                                            <tr>
+                                                <th scope="col">Day</th>
+                                                <th scope="col">Activity</th>
+                                            </tr>
+                                        </thead>
+                                            <tbody id="itin-tbody">
+                                        `;
+                        for (var i = 0; i < result.length; i++) {
+                            itinerary += `<tr>
+                                            <th scope="row">${result[i].day}</th>
+                                            <td>${result[i].activity}</td>
+                                        </tr>`;
+                        }
+                        itinerary += `</tbody>`
+                        $("#itinerary-table").html(itinerary);
+                        var desc = `<div>
+                                            Description:    
+                                        </div>
+                                        <p>
+                                            ${result[0].description}
+                                        </p>`;
+
+                        $(".itinerary-desc").html(desc);
+                    } else {
+                        console.log("Error");
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error in Operation');
+                }
+            });
+        }
+        // END OPEN ITINERARY
+
+
+        $(document).ready(function () { // Listening for changes in the user input
+            submitSearch($("#search").val(), $("#month").val(), $("#year").val(), $("#price").val());
+            $("#search").keyup(function () {
+                submitSearch($("#search").val(), $("#month").val(), $("#year").val(), $("#price").val());
+            });
+
+            $("#month").change(function () {
+                submitSearch($("#search").val(), $("#month").val(), $("#year").val(), $("#price").val());
+            });
+
+            $("#year").change(function () {
+                submitSearch($("#search").val(), $("#month").val(), $("#year").val(), $("#price").val());
+            });
+
+            $("#price").keyup(function () {
+                submitSearch($("#search").val(), $("#month").val(), $("#year").val(), $("#price").val());
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+
+    <!--::header part start::-->
+    <header class="main_menu">
+        <div class="main_menu_iner">
+            <div class="container">
+                <div class="row align-items-center ">
+                    <div class="col-lg-12">
+                        <nav class="navbar navbar-expand-lg navbar-light justify-content-between">
+
+                            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+
+                            <div class="collapse navbar-collapse main-menu-item justify-content-center"
+                                id="navbarSupportedContent">
+                                <ul class="navbar-nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="index.html">Home</a>
+                                    </li>
+                                    <li class="nav-item" id="login">
+                                        <a class="nav-link" href="login.html">Log In</a>
+                                    </li>
+                                    <li class="nav-item" id="nav-admin">
+
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Header part end-->
+
+
+    <!-- about us css start-->
+    <section class="hotel_list section_padding single_page_hotel_list">
+        <div class="container">
+
+            <!-- Itinerary Modal -->
+            <div id="myModal" class="modal fade show" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content my-5">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Itinerary</h4>
+                        </div>
+                        <div class="modal-body">
+                            <table id="itinerary-table" class="table table-striped">
+                                <!-- Table from OpenItinerary function appears here -->
+                            </table>
+                            <div class="itinerary-desc">
+                                <!-- description from OpenItinerary function appears here -->
+                            </div>
+                        </div>
+
+
+                        <div class="justify-content-end mx-0 modal-footer">
+                            <button type="button" class="p-2 float-right btn btn-default"
+                                data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Itinerary Modal -->
+            <div class="mb-3">
+                <h1 >
+                    Travel Listings:
+                </h1>
+            </div>
+            <div id="search-bar" class="justify-content-center mb-5">
+                <form class="form-inline justify-content-center md-form form-sm active-cyan-2" _lpchecked="1">
+                    <div class="search form-group">
+                        <input id="search" class="form-control form-control-lg mr-3" type="text" placeholder="Search"
+                            aria-label="Search">
+                    </div>
+
+                    <div class="mr-2">
+                        Preferred Period:
+                    </div>
+                    <div class="row">
+                        <div class="col-6 form-group">
+                            <!-- <label for="month">Month:</label> -->
+                            <select class="form-control form-control-lg" id="month">
+                                <option value=""></option>
+                                <option>January</option>
+                                <option>February</option>
+                                <option>March</option>
+                                <option>April</option>
+                                <option>May</option>
+                                <option>June</option>
+                                <option>July</option>
+                                <option>August</option>
+                                <option>September</option>
+                                <option>October</option>
+                                <option>November</option>
+                                <option>December</option>
+                            </select>
+                        </div>
+                        <div class="col-6 form-group">
+                            <!-- <label for="year">Year:</label> -->
+                            <select class="form-control form-control-lg" id="year">
+                                <option value=""></option>
+                                <option>2020</option>
+                                <option>2021</option>
+                                <option>2022</option>
+                                <option>2023</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="price form-group">
+                        <input id="price" class="form-control form-control-lg mr-3" type="number"
+                            placeholder="Max Price"> <!-- Max set to $15000. -->
+                    </div>
+
+                </form>
+
+            </div>
+            <div id="listings" class="row">
+                <!-- Listings from Database go here -->
+            </div>
+            <section class="container content-section">
+                <h2 class="section-header">CART</h2>
+                <div id="cartOutput" class="cart-items">
+
+                </div>
+                <div class="cart-total">
+                    <strong class="cart-total-title">Total</strong>
+                    <span id="totalcost" class="cart-total-price"></span>
+                </div>
+                <button class="btn btn-primary btn-purchase" type="button">PURCHASE</button>
+            </section>
+        </div>
+    </section>
+    <!-- about us css end-->
+
+
+
+    <!-- footer part start-->
+    <footer class="footer-area">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-sm-6 col-md-5">
+                    <div class="single-footer-widget">
+                        <h4>Discover Destination</h4>
+                        <ul>
+                            <li><a href="#">Miami, USA</a></li>
+                            <li><a href="#">California, USA</a></li>
+                            <li><a href="#">London, UK</a></li>
+                            <li><a href="#">Saintmartine, Bangladesh</a></li>
+                            <li><a href="#">Mount Everast, India</a></li>
+                            <li><a href="#">Sidney, Australia</a></li>
+                            <li><a href="#">Miami, USA</a></li>
+                            <li><a href="#">California, USA</a></li>
+                            <li><a href="#">London, UK</a></li>
+                            <li><a href="#">Saintmartine, Bangladesh</a></li>
+                            <li><a href="#">Mount Everast, India</a></li>
+                            <li><a href="#">Sidney, Australia</a></li>
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4">
+                    <div class="single-footer-widget">
+                        <h4>Subscribe Newsletter</h4>
+                        <div class="form-wrap" id="mc_embed_signup">
+                            <form target="_blank"
+                                action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01"
+                                method="get" class="form-inline">
+                                <input class="form-control" name="EMAIL" placeholder="Your Email Address"
+                                    onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your Email Address '"
+                                    required="" type="email">
+                                <button class="click-btn btn btn-default text-uppercase"> <i
+                                        class="far fa-paper-plane"></i>
+                                </button>
+                                <div style="position: absolute; left: -5000px;">
+                                    <input name="b_36c4fd991d266f23781ded980_aefe40901a" tabindex="-1" value=""
+                                        type="text">
+                                </div>
+
+                                <div class="info"></div>
+                            </form>
+                        </div>
+                        <p>Subscribe our newsletter to get update news and offers</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="single-footer-widget footer_icon">
+                        <h4>Contact Us</h4>
+                        <p>4156, New garden, New York, USA
+                            +880 362 352 783</p>
+                        <span>contact@martine.com</span>
+                        <div class="social-icons">
+                            <a href="#"><i class="ti-facebook"></i></a>
+                            <a href="#"><i class="ti-twitter-alt"></i></a>
+                            <a href="#"><i class="ti-pinterest"></i></a>
+                            <a href="#"><i class="ti-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-lg-12">
+                    <div class="copyright_part_text text-center">
+                        <p class="footer-text m-0">
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            Copyright &copy;
+                            <script>document.write(new Date().getFullYear());</script> All rights reserved | This
+                            template is made with <i class="ti-heart" aria-hidden="true"></i> by <a
+                                href="https://colorlib.com" target="_blank">Colorlib</a>
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        </p>

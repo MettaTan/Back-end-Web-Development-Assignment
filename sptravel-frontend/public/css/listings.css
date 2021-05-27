@@ -1,0 +1,35 @@
+.country {
+    font-weight: bold;
+}
+.description {
+    font-size: 14px;
+}
+.single_ihotel_list .figure {
+    overflow: hidden;
+}
+.hotel_list .single_ihotel_list .hotel_text_iner {
+    
+}
+/* h5 {
+    color: #0c3e72;
+    font-family: "Open Sans", sans-serif;
+} */
+
+h5 span {
+    color: #fe5c24;
+}
+
+#search-bar .search {
+    width: 100%;
+}
+
+#search-bar .search input {
+    width: 100%;
+}
+.price {
+    width: 15%;
+}
+#price {
+    width: 100%
+}
+/* Popup CSS */

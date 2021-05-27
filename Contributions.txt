@@ -1,0 +1,30 @@
+Ben: 
+•	Front-end for the web application (You are allowed to use open source templates downloaded from the internet)
+•	Advanced search of travel listing by country, max price and period of travel. (searching by country, max price and period can work independently or together without the need to submit all 3 at once)
+•	View travel listing details (including itinerary).
+•	Add new travel listing (Only for Admins) 
+•	Additional editing/deletion of travel listings feature. (shows old values before updating)
+•	Add new travel itineraries (Only for Admins) 
+•	Additional Add/edit users feature.
+•	Image upload of actual image for travel listing/package when creating new travel listing/package.
+
+
+Metta:
+•	Front-end for the web application (You are allowed to use open source templates downloaded from the internet)
+•	Persistent login (and logout)
+•	Search travel listing by country, max price and period of travel. Max Price can be empty which implies no budget. You can assume other fields would be filled up.
+•	Ensure necessary JWT checking for access rights for relevant web api is done 
+•	Provide upload of actual image for travel listing/package when creating new travel listing/package 
+•	Shopping Cart functionality to book travel packages
+
+Additional features:
+• More advanced search
+• Additional editing/deletion of travel listings feature. (shows old values before updating)
+• Additional Add/edit users feature.
+• Image upload of actual image for travel listing/package when creating new travel listing/package.
+• Shopping Cart functionality to book travel packages 
+
+
+6D5N Perth
+
+Perth, capital of Western Australia, sits where the Swan River meets the southwest coast. Sandy beaches line its suburbs, and the huge, riverside Kings Park and Botanic Garden on Mount Eliza offer sweeping views of the city. The Perth Cultural Centre houses the state ballet and opera companies, and occupies its own central precinct, including a theatre, library and the Art Gallery of Western Australia.
