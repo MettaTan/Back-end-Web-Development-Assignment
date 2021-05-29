@@ -9,7 +9,7 @@ MySQL Setup:
 
 3. Hostname: 3.132.36.162
    Port: 3306
-   Username: "Ben" or "Metta"
+   Username: Metta
    Password: !QWER4321
 
 4. Database is on an AWS server so no data import is needed
