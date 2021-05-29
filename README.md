@@ -1,5 +1,5 @@
 # Back-End Assignment
- Used to demonstrate knowledge of back-end web development (without secure coding practices)
+Used to demonstrate knowledge of back-end web development (without secure coding practices)
 
 MySQL Setup:
 
@@ -13,7 +13,8 @@ MySQL Setup:
    Password: !QWER4321
 
 4. Database is on an AWS server so no data import is needed
-========================================================================================
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 How to start program:
 
 1. Open command prompt or terminal in Visual Studio Code
